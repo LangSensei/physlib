@@ -133,5 +133,29 @@ def isFutureDirected {d : ℕ} (v : Vector d) : Prop :=
 def isPastDirected {d : ℕ} (v : Vector d) : Prop :=
   timeComponent v < 0
 
+/-- The reverse Cauchy–Schwarz inequality for future-directed causal Lorentz vectors.
+The non-strict hypotheses include null vectors and the zero vector. -/
+lemma sqrt_mul_sqrt_le_minkowskiProduct {d : ℕ} (p q : Vector d)
+    (hp : 0 ≤ ⟪p, p⟫ₘ) (hq : 0 ≤ ⟪q, q⟫ₘ)
+    (hp₀ : 0 ≤ p (Sum.inl 0)) (hq₀ : 0 ≤ q (Sum.inl 0)) :
+    √⟪p, p⟫ₘ * √⟪q, q⟫ₘ ≤ ⟪p, q⟫ₘ := by
+  have hp_sq : ⟪p, p⟫ₘ + ∑ i, p (Sum.inr i) ^ 2 = p (Sum.inl 0) ^ 2 := by
+    rw [minkowskiProduct_toCoord]
+    simp only [← pow_two]
+    ring
+  have hq_sq : ⟪q, q⟫ₘ + ∑ i, q (Sum.inr i) ^ 2 = q (Sum.inl 0) ^ 2 := by
+    rw [minkowskiProduct_toCoord]
+    simp only [← pow_two]
+    ring
+  -- Apply Euclidean Cauchy–Schwarz after replacing each time component by its proper length.
+  have hcs := Real.sum_mul_le_sqrt_mul_sqrt Finset.univ
+    (Sum.elim (fun _ : Fin 1 => √⟪p, p⟫ₘ) (fun i : Fin d => p (Sum.inr i)))
+    (Sum.elim (fun _ : Fin 1 => √⟪q, q⟫ₘ) (fun i : Fin d => q (Sum.inr i)))
+  simp only [Fintype.sum_sum_type, Fin.sum_univ_one, Sum.elim_inl, Sum.elim_inr,
+    Real.sq_sqrt hp, Real.sq_sqrt hq] at hcs
+  rw [hp_sq, hq_sq, Real.sqrt_sq hp₀, Real.sqrt_sq hq₀] at hcs
+  rw [minkowskiProduct_toCoord p q]
+  exact le_sub_iff_add_le.mpr hcs
+
 end Vector
 end Lorentz

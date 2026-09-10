@@ -18,8 +18,9 @@ whilst twin B makes a detour through the spacetime `twinBMid` and then to `endPo
 In this file, we assume that both twins travel at constant speed,
 and that the acceleration of Twin B is instantaneous.
 
-The conclusion of this scenario is that Twin A will be older than Twin B when they meet at
-`endPoint`. This is something we show here with an explicit example.
+Twin A is at least as old as Twin B when they meet at `endPoint`. We prove this for all
+configurations satisfying the causal assumptions, and illustrate a positive age gap with an
+explicit example.
 
 The origin of the twin paradox dates back to Paul Langevin in 1911.
 
@@ -67,11 +68,11 @@ def ageGap : ℝ := T.properTimeTwinA - T.properTimeTwinB
 
 TODO "Find the conditions for which the age gap for the twin paradox is zero."
 
-/-- In the twin paradox with instantaneous acceleration, Twin A is always older
-  then Twin B. -/
-informal_lemma ageGap_nonneg where
-  deps := [``ageGap]
-  tag := "7ROVE"
+/-- In the twin paradox with instantaneous acceleration, Twin A is at least as old as Twin B.
+This includes configurations with coincident events or null travel segments. -/
+lemma ageGap_nonneg : 0 ≤ T.ageGap := by
+  exact sub_nonneg.mpr (SpaceTime.properTime_add_le
+    T.twinBMid_causallyFollows_startPoint T.endPoint_causallyFollows_twinBMid)
 
 /-!
 
