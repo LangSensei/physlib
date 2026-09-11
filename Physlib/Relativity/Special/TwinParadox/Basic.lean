@@ -9,18 +9,21 @@ public import Physlib.Relativity.Special.ProperTime
 /-!
 # Twin Paradox
 
-The twin paradox corresponds to the following scenario:
+This module compares elapsed proper times along piecewise straight, future-causal journeys
+in Minkowski spacetime. Both journeys start at `startPoint` and end at `endPoint`.
+Twin A takes the single straight segment between them. Twin B takes two straight segments
+through `twinBMid`.
 
-Two twins start at the same point `startPoint` in spacetime.
-Twin A travels at constant speed to the spacetime point `endPoint`,
-whilst twin B makes a detour through the spacetime `twinBMid` and then to `endPoint`.
+For massive twins, these segments describe inertial motion, with B's velocity allowed to
+change instantaneously at the intermediate event. No condition that A is at rest in the
+chosen coordinates is imposed. The formal causal hypotheses also allow null segments and
+coincident events as boundary cases.
 
-In this file, we assume that both twins travel at constant speed,
-and that the acceleration of Twin B is instantaneous.
-
-Twin A is at least as old as Twin B when they meet at `endPoint`. We prove this for all
-configurations satisfying the causal assumptions, and illustrate a positive age gap with an
-explicit example.
+We prove that A accumulates at least as much proper time as B. The signed difference
+`ageGap` is therefore nonnegative; it is not defined using an absolute value. For twins of
+equal initial age, this is their final age difference. The model does not require a genuine
+detour, so the conclusion is non-strict. The example below chooses coordinates in which A
+remains at the spatial origin.
 
 The origin of the twin paradox dates back to Paul Langevin in 1911.
 
@@ -37,7 +40,8 @@ open Real
 open Lorentz
 open Vector
 
-/-- The twin paradox assuming instantaneous acceleration. -/
+/-- Two future-causal journeys with common endpoints, represented by one straight segment
+for twin A and two straight segments for twin B. -/
 structure InstantaneousTwinParadox where
   /-- The starting point of both twins. -/
   startPoint : SpaceTime 3
@@ -53,23 +57,23 @@ namespace InstantaneousTwinParadox
 variable (T: InstantaneousTwinParadox)
 open SpaceTime
 
-/-- The proper time experienced by twin A travelling at constant speed
-  from `T.startPoint` to `T.endPoint`. -/
+/-- The proper time along twin A's straight segment from `T.startPoint` to `T.endPoint`. -/
 def properTimeTwinA : ℝ := SpaceTime.properTime T.startPoint T.endPoint
 
-/-- The proper time experienced by twin B travelling at constant speed
-  from `T.startPoint` to `T.twinBMid`, and then from `T.twinBMid`
-  to `T.endPoint`. -/
+/-- The sum of the proper times along twin B's straight segments from `T.startPoint`
+to `T.twinBMid` and from `T.twinBMid` to `T.endPoint`. -/
 def properTimeTwinB : ℝ := SpaceTime.properTime T.startPoint T.twinBMid +
   SpaceTime.properTime T.twinBMid T.endPoint
 
-/-- The proper time of twin A minus the proper time of twin B. -/
+/-- The signed difference of elapsed proper times: twin A's minus twin B's.
+For equal initial ages, this is the difference of final ages. -/
 def ageGap : ℝ := T.properTimeTwinA - T.properTimeTwinB
 
 TODO "Find the conditions for which the age gap for the twin paradox is zero."
 
-/-- In the twin paradox with instantaneous acceleration, Twin A is at least as old as Twin B.
-This includes configurations with coincident events or null travel segments. -/
+/-- In the straight-segment twin model, A accumulates at least as much proper time as B.
+No rest-frame or strict-detour assumption is required. Null segments and coincident events
+are included. -/
 lemma ageGap_nonneg : 0 ≤ T.ageGap := by
   exact sub_nonneg.mpr (SpaceTime.properTime_add_le
     T.twinBMid_causallyFollows_startPoint T.endPoint_causallyFollows_twinBMid)
@@ -81,11 +85,10 @@ lemma ageGap_nonneg : 0 ≤ T.ageGap := by
 -/
 
 set_option backward.isDefEq.respectTransparency false in
-/-- The twin paradox in which:
-- Twin A starts at `0` and travels at constant
-  speed to `[15, 0, 0, 0]`.
-- Twin B starts at `0` and travels at constant speed to
-  `[7.5, 6, 0, 0]` and then at (different) constant speed to `[15, 0, 0, 0]`. -/
+/-- An example in a frame where twin A remains at the spatial origin:
+- Twin A goes from event `0` to `[15, 0, 0, 0]` without changing spatial position.
+- Twin B follows two straight segments via `[7.5, 6, 0, 0]` to `[15, 0, 0, 0]`.
+The two legs of B's journey have equal speed and opposite spatial velocities. -/
 def example1 : InstantaneousTwinParadox where
   startPoint := 0
   endPoint := (fun

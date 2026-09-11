@@ -133,8 +133,9 @@ def isFutureDirected {d : ℕ} (v : Vector d) : Prop :=
 def isPastDirected {d : ℕ} (v : Vector d) : Prop :=
   timeComponent v < 0
 
-/-- The reverse Cauchy–Schwarz inequality for future-directed causal Lorentz vectors.
-The non-strict hypotheses include null vectors and the zero vector. -/
+/-- The reverse Cauchy–Schwarz inequality on the closed future causal cone.
+The hypotheses require nonnegative Minkowski squares and nonnegative time components,
+so null vectors and the zero vector are included. -/
 lemma sqrt_mul_sqrt_le_minkowskiProduct {d : ℕ} (p q : Vector d)
     (hp : 0 ≤ ⟪p, p⟫ₘ) (hq : 0 ≤ ⟪q, q⟫ₘ)
     (hp₀ : 0 ≤ p (Sum.inl 0)) (hq₀ : 0 ≤ q (Sum.inl 0)) :

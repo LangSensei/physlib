@@ -62,8 +62,9 @@ private lemma causallyFollows_bounds {d : ℕ} {p q : SpaceTime d}
   · exact ⟨((timeLike_iff_norm_sq_pos _).mp h.1).le, h.2.le⟩
   · exact ⟨((lightLike_iff_norm_sq_zero _).mp h.1).ge, h.2⟩
 
-/-- Proper time obeys the reverse triangle inequality along future-causal separations:
-travelling directly from `p` to `r` takes at least as much proper time as going via `q`. -/
+/-- The proper time of the straight segment from `p` to `r` is at least the sum for the
+straight segments from `p` to `q` and from `q` to `r`, when both legs are future-causal.
+No condition that the direct segment is at rest in the chosen coordinates is imposed. -/
 lemma properTime_add_le {d : ℕ} {p q r : SpaceTime d}
     (hpq : causallyFollows p q) (hqr : causallyFollows q r) :
     properTime p q + properTime q r ≤ properTime p r := by
