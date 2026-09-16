@@ -228,9 +228,6 @@ lemma space_toCoord_symm {d : ℕ} (f : Fin 1 ⊕ Fin d → ℝ) :
 
 -/
 
-open realLorentzTensor
-open Tensor
-
 /-- Spatial projection intertwines a rotation's Lorentz action on spacetime with its
 Euclidean action on space, using the same special orthogonal matrix on both sides.
 These are rotations about the coordinate origin; no boosts or translations are included. -/
@@ -239,9 +236,8 @@ lemma space_equivariant {d : ℕ}
     space ((LorentzGroup.ofSpecialOrthogonal R : LorentzGroup d) • x) =
       EuclideanGroup.ofRotation R • space x := by
   ext i
-  change ((LorentzGroup.ofSpecialOrthogonal R : LorentzGroup d) • x) (Sum.inr i) =
-    (EuclideanGroup.ofRotation R • space x) i
   rw [Lorentz.Vector.smul_eq_mulVec, EuclideanGroup.smul_apply]
+  -- The Lorentz spatial block is R; the Euclidean action has zero translation.
   change (Matrix.fromBlocks 1 0 0 R.val *ᵥ x) (Sum.inr i) =
     (R.val *ᵥ (fun j => x (Sum.inr j) - 0)) i + 0
   simp [Matrix.fromBlocks_mulVec, Function.comp_def]
